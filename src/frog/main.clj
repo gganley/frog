@@ -1,0 +1,38 @@
+(ns frog.main
+  (:require [clojure.java.io :as io])
+  (:import (javax.sound.sampled
+            AudioInputStream
+            AudioSystem)
+           (java.nio
+            ByteBuffer
+            ByteOrder)
+           (org.apache.commons.math3.transform
+            FastFourierTransformer
+            DftNormalization
+            TransformType)
+           (org.apache.commons.math3.complex
+            Complex)))
+
+(defn get-audio-buffer [file-path]
+  (with-open [in (AudioSystem/getAudioInputStream (io/file file-path))]
+    (let [buffer (byte-array (* 2 (.getFrameLength in)))
+          short-buffer (short-array (.getFrameLength in))]
+      (while (-> in (.read buffer) neg? not))
+      (.. (ByteBuffer/wrap buffer)
+          (order ByteOrder/LITTLE_ENDIAN)
+          asShortBuffer
+          (get short-buffer))
+      short-buffer)))
+
+(defn fft [x]
+  (.transform (FastFourierTransformer. DftNormalization/STANDARD)
+              (double-array x)
+              TransformType/FORWARD))
+
+(defn hann-window [alpha beta big-n]
+  (for [little-n (range big-n)]
+    (- alpha (* beta (Math/cos (/ (* 2 Math/PI little-n)
+                                  big-n))))))
+
+(defn hamming-window [coll]
+  (hann-window 0.54 0.46 (count coll)))
