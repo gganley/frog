@@ -7,13 +7,11 @@
 
 (defn get-audio-buffer [file-path]
   (with-open [in (AudioSystem/getAudioInputStream (io/file file-path))]
-    (let [buffer (byte-array (* 2 (.getFrameLength in)))
+    (let [frame-width (.getSampleSizeInBits (.getFormat in))
+          buffer (byte-array (* (/ frame-width 8) (.getFrameLength in)))
           short-buffer (short-array (.getFrameLength in))]
       (while (-> in (.read buffer) neg? not))
-      (.. (ByteBuffer/wrap buffer)
-          (order ByteOrder/LITTLE_ENDIAN)
-          asShortBuffer
-          (get short-buffer))
+      (.. (ByteBuffer/wrap buffer) (order ByteOrder/LITTLE_ENDIAN) asShortBuffer (get short-buffer))
       short-buffer)))
 
 (defn fft [x]
