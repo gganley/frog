@@ -1,17 +1,9 @@
 (ns frog.main
   (:require [clojure.java.io :as io])
-  (:import (javax.sound.sampled
-            AudioInputStream
-            AudioSystem)
-           (java.nio
-            ByteBuffer
-            ByteOrder)
-           (org.apache.commons.math3.transform
-            FastFourierTransformer
-            DftNormalization
-            TransformType)
-           (org.apache.commons.math3.complex
-            Complex)))
+  (:import (java.nio ByteBuffer ByteOrder)
+           (javax.sound.sampled AudioInputStream AudioSystem)
+           org.apache.commons.math3.complex.Complex
+           (org.apache.commons.math3.transform DftNormalization FastFourierTransformer TransformType)))
 
 (defn get-audio-buffer [file-path]
   (with-open [in (AudioSystem/getAudioInputStream (io/file file-path))]
