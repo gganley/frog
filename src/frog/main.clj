@@ -4,9 +4,14 @@
    [frog.window :as window])
   (:import
    (java.nio ByteBuffer ByteOrder)
-   (javax.sound.sampled AudioInputStream AudioSystem)
+   (javax.sound.sampled
+    AudioInputStream
+    AudioSystem)
    (org.apache.commons.math3.complex.Complex)
-   (org.apache.commons.math3.transform DftNormalization FastFourierTransformer TransformType)))
+   (org.apache.commons.math3.transform
+    DftNormalization
+    FastFourierTransformer
+    TransformType)))
 
 (defn get-audio-buffer [file-path]
   (with-open [in (AudioSystem/getAudioInputStream (io/file file-path))]
