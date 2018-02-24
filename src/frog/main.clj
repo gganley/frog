@@ -13,6 +13,8 @@
     FastFourierTransformer
     TransformType)))
 
+(defn mean [coll]
+  (/ (reduce + coll) (count coll)))
 
 (defn- log2 [val]
   (/ (Math/log val) (Math/log 2)))
@@ -25,6 +27,10 @@
   (let [big-n (count coll)
         nearest-pow2 (first (drop-while #(> big-n %) (iterate #(* 2 %) 1N)))]
     (take nearest-pow2 (concat coll (repeat 0)))))
+
+(defn- overlap [coll overlap-rate]
+  (let [big-n (count coll)]
+    (Math/floor (- big-n (* big-n overlap-rate)))))
 
 (defn get-audio-buffer
   "Take read from the absolute path FILE-PATH to a WAV file. Returns a
