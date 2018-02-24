@@ -27,14 +27,6 @@
               (double-array x)
               TransformType/FORWARD))
 
-(defn hann-window [alpha beta big-n]
-  (for [little-n (range big-n)]
-    (- alpha (* beta (Math/cos (/ (* 2 Math/PI little-n)
-                                  big-n))))))
-
-(defn hamming-window [coll]
-  (hann-window 0.54 0.46 (count coll)))
-
 (defn spectrogram-array
   ([coll n]
    (map fft (partition n coll)))
