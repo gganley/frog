@@ -69,11 +69,13 @@
               TransformType/FORWARD))
 
 (defn spectrogram-array
-  ([coll n]
-   (map fft (partition n coll)))
-  ([coll n d]
-   (map fft (partition n d coll)))
-  ([coll n d omega]
-   (pmap (fn [segment] (map #(.multiply %1 %2)
-                           (fft segment)
-                           (omega segment))) (partition n d coll))))
+  ([coll window-size]
+   (map fft (partition window-size coll)))
+  ([coll window-size overlap-rate]
+   (map fft (partition window-size (overlap coll overlap-rate) coll)))
+  ([coll window-size overlap-rate wfun]
+   (map (fn [segment] (map #(.multiply %1 %2)
+                          (fft segment)
+                          (wfun segment)))
+        (partition window-size (overlap coll overlap-rate) coll))))
+
