@@ -32,6 +32,14 @@
   (let [big-n (count coll)]
     (Math/floor (- big-n (* big-n overlap-rate)))))
 
+(defn histogram
+  "Creates a histogram of COLL.
+  Creates a seq where empty pockets are filled with 0.
+  Does not attempt to make values of COLL integers"
+  [coll]
+  (map second (merge (zipmap (range (count coll)) (repeat 0))
+                     (frequencies coll))))
+
 (defn get-audio-buffer
   "Take read from the absolute path FILE-PATH to a WAV file. Returns a
    short-array representation of the WAV file"
