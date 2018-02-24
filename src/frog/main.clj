@@ -13,7 +13,6 @@
     FastFourierTransformer
     TransformType)))
 
-(defn get-audio-buffer [file-path]
 
 (defn- log2 [val]
   (/ (Math/log val) (Math/log 2)))
@@ -27,12 +26,23 @@
         nearest-pow2 (first (drop-while #(> big-n %) (iterate #(* 2 %) 1N)))]
     (take nearest-pow2 (concat coll (repeat 0)))))
 
+(defn get-audio-buffer
+  "Take read from the absolute path FILE-PATH to a WAV file. Returns a
+   short-array representation of the WAV file"
+  [file-path]
   (with-open [in (AudioSystem/getAudioInputStream (io/file file-path))]
-    (let [frame-width (.getSampleSizeInBits (.getFormat in))
-          buffer (byte-array (* (/ frame-width 8) (.getFrameLength in)))
-          short-buffer (short-array (.getFrameLength in))]
-      (while (-> in (.read buffer) neg? not))
-      (.. (ByteBuffer/wrap buffer) (order ByteOrder/LITTLE_ENDIAN) asShortBuffer (get short-buffer))
+    (let [frame-length (.getFrameLength in)
+          buffer (byte-array (* frame-length (.. in getFormat getFrameSize)))
+          short-buffer (short-array frame-length)]
+      ;; Read in all the content of the file, shouldn't fail
+      (while (-> in (.read buffer) pos?))
+      ;; This changes byte<> to short<> and respects the
+      ;; transition of type, so two bytes make a short etc
+      (.. (ByteBuffer/wrap buffer)
+          (order ByteOrder/LITTLE_ENDIAN)
+          asShortBuffer
+          (get short-buffer))
+      ;; return the short buffer that now has all the information
       short-buffer)))
 
 (defn fft
