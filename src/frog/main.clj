@@ -1,6 +1,7 @@
 (ns frog.main
   (:require
-   [clojure.java.io :as io])
+   [clojure.java.io :as io]
+   [frog.window :as window])
   (:import
    (java.nio ByteBuffer ByteOrder)
    (javax.sound.sampled AudioInputStream AudioSystem)
