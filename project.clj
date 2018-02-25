@@ -5,5 +5,5 @@
             :url "https://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.apache.commons/commons-math3 "3.6.1"]]
-  :main frog.main
+  :main frog.core
   :source-paths["src"])
