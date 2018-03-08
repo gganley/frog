@@ -15,7 +15,9 @@
 (defn ifft
   [x]
   (.transform (FastFourierTransformer. DftNormalization/UNITARY)
-              (into-array x)
+              (if (pow2? (count x))
+                (into-array x)
+                (into-array (pad-to-pow2 x)))
               TransformType/INVERSE))
 
 (defn- convolution [xs ys]
