@@ -1,0 +1,6 @@
+bin/
+include/
+lib/
+/main_flymake.py
+/pip-selfcheck.json
+/.Python
