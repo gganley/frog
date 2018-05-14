@@ -8,19 +8,16 @@ def harma(audio_file):
     sample_rate, audio_data = wavread(audio_file)
 
     f_domain, t_domain, sxx = signal.spectrogram(audio_data, sample_rate, 'hamming', 512, int(512 * (1 - 0.25)))
-    alpha = []
 
     sxx = step_2(sxx)
-    a = []
-    t_n = []
-    sxx, a, t_n = syllable(sxx, a, t_n, 0)
+    sxx, a, t, output_syllables = syllable(sxx, [], [], 0, [])
 
     # The following is a complete hack
     a = a[:-1]
-    return t_n
+    return sxx, a, t
 
 
-def syllable(sxx, a, t, n):
+def syllable(sxx, a, t, n, output_syllables):
     beta = pow(10, 18 / 20)
     f_n, t_n = np.unravel_index(np.argmax(sxx, axis=None), sxx.shape)
 
@@ -30,20 +27,19 @@ def syllable(sxx, a, t, n):
 
     limit = a[n][0] - beta
     backward_trace = trace_syllable(sxx[..., t_n-1::-1], limit)
-    backward = dict(zip(range(-1, -len(backward_trace) -1, -1), backward_trace))
+    backward = dict(zip(range(-1, -len(backward_trace) - 1, -1), backward_trace))
 
     forward_trace = trace_syllable(sxx[..., t_n+1:], limit)
-    forward = dict(zip(range(1, len(forward_trace)), forward_trace))
-
-    a[n] = {**backward, 0: a[n][0], **forward}
+    forward = dict(zip(range(1, len(forward_trace) + 1), forward_trace))
 
     t_s = t_n - len(backward_trace)
     t_e = len(forward_trace) + t_n
 
     t.insert(n, (t_s, t_n, t_e))
+    output_syllables.insert(n, sxx[..., t_s:t_e+1])
     sxx[..., t_s:t_e+1] = np.zeros((sxx.shape[0], t_e - t_s + 1))
 
-    return syllable(sxx, a, t, n + 1)
+    return syllable(sxx, a, t, n + 1, output_syllables)
 
 
 def step_3(sxx):
