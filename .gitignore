@@ -1,6 +1,3 @@
-bin/
-include/
-lib/
-/main_flymake.py
-/pip-selfcheck.json
-/.Python
+.idea/
+__pycache__/
+venv/
